@@ -8,9 +8,10 @@ import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.PointerInfo;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.nio.file.*;
 
 
 public class Application extends JFrame
@@ -26,8 +27,9 @@ public class Application extends JFrame
     private boolean stop;
     
     private int frameCount;
+    private int brushSize;
 
-    private double[][] grid = new double[SCREENHEIGHT][SCREENWIDTH];
+    private double[][] grid = new double[SCREENHEIGHT/2][SCREENWIDTH/2];
 
     public static boolean[] keys = {false, false, false};
     
@@ -38,40 +40,23 @@ public class Application extends JFrame
     public Application(boolean dbm) 
     {
         debugMode = dbm;
+
         addKeyListener(new KeyAdapter() {
           public void keyPressed(KeyEvent e) {
             int keyCode = e.getKeyCode();
             switch (e.getKeyCode())
             {
                 case KeyEvent.VK_UP:
-                    keys[2] = true;
+                    brushSize = brushSize*2;
                     break;
-                case KeyEvent.VK_LEFT:
-                    keys[0] = true;
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    keys[1] = true;
+                case KeyEvent.VK_DOWN:
+                    brushSize = brushSize/2;
                     break;
             }
-          }
-            public void keyReleased(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-            switch (e.getKeyCode())
-            {
-                case KeyEvent.VK_UP:
-                    keys[2] = false;
-                    break;
-                case KeyEvent.VK_LEFT:
-                    keys[0] = false;
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    keys[1] = false;
-                    break;
-            }
+            System.out.println("Brushsize: " + brushSize);
           }
         });
-
-
+        addMouseListener(new MouseClickHandler()); 
         setSize(SCREENWIDTH, SCREENHEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -80,9 +65,10 @@ public class Application extends JFrame
         rand = new Random();
         frameCount = 0;
         stop = false;
+        brushSize = 2;
 
         k1 = 1;
-        k2 = 6;
+        k2 = 5;
 
         for (int r = 0; r < grid.length; r++)
         {
@@ -105,6 +91,34 @@ public class Application extends JFrame
         };
         
         gameLooper.execute();
+    }
+
+
+    private class MouseClickHandler extends MouseAdapter {
+    // handle mouse-click event and determine which button was pressed
+        @Override
+        public void mouseClicked(MouseEvent event) {
+            int xPos = event.getX(); // get x-position of mouse
+            int yPos = event.getY(); // get y-position of mouse
+            for (int i = -brushSize; i <= brushSize; i++)
+            {   
+                for (int j = -brushSize; j <= brushSize; j++)
+                {
+                    try
+                    {
+                        if (event.getButton() == 1)
+                            grid[(xPos+i)/2][(yPos+j)/2] = 255;
+                        else
+                            grid[(xPos+i)/2][(yPos+j)/2] = 1;
+                    }
+                    catch (Exception e)
+                    {
+                        continue;
+                    }
+                }
+            }
+            
+        }
     }
 
     @Override
@@ -132,7 +146,7 @@ public class Application extends JFrame
             {
                 int cn = (int)clamp(grid[r][c],0,255);
                 g.setColor(new Color(cn, cn, cn));
-                g.fillRect(r*8,c*8,8,8);
+                g.fillRect(r*2,c*2,2,2);
             }
 
         }
@@ -170,16 +184,11 @@ public class Application extends JFrame
 
                 else if (isCellInfected(r,c))
                 {
-                    grid[r][c] = (sum / (a + b) + 1) + 15;
+                    grid[r][c] = (sum / (a + b) + 1) + 82;
                 }
                 
              }
         }
-    }
-
-    public void keyTyped(KeyEvent e)
-    {
-        System.out.print(e);
     }
 
     public boolean isCellHealthy(int r, int c) {
