@@ -15,8 +15,8 @@ import java.nio.file.*;
 
 public class Application extends JFrame
 {
-    public static final int SCREENHEIGHT = 800;
-    public static final int SCREENWIDTH = 800;
+    public static final int SCREENHEIGHT = 1200;
+    public static final int SCREENWIDTH = 1200;
 
     public static Random rand;
     private Image dbImage;
@@ -27,7 +27,7 @@ public class Application extends JFrame
     
     private int frameCount;
 
-    private int[][] grid = new int[100][100];
+    private double[][] grid = new double[SCREENHEIGHT][SCREENWIDTH];
 
     public static boolean[] keys = {false, false, false};
     
@@ -82,7 +82,7 @@ public class Application extends JFrame
         stop = false;
 
         k1 = 1;
-        k2 = 1;
+        k2 = 6;
 
         for (int r = 0; r < grid.length; r++)
         {
@@ -98,7 +98,7 @@ public class Application extends JFrame
                 while(!stop) {
                     update();
                     repaint();
-                    Thread.sleep(7); //17ms = ~60 FPS
+                    Thread.sleep(51); //17ms = ~60 FPS
                 }
                 return null;
             }
@@ -132,7 +132,7 @@ public class Application extends JFrame
             {
                 int cn = (int)clamp(grid[r][c],0,255);
                 g.setColor(new Color(cn, cn, cn));
-                g.fillRect(c*8,r*8,4, 4);
+                g.fillRect(r*8,c*8,8,8);
             }
 
         }
@@ -142,8 +142,13 @@ public class Application extends JFrame
     {
         frameCount++;
         double sum = 0;
-        double a = 0;
-        double b = 0;
+        int a = 0;
+        int b = 0;
+
+        if (false)
+        {
+            return;
+        }
 
         for (int r = 0; r < grid.length; r++)
         {
@@ -153,14 +158,9 @@ public class Application extends JFrame
                 a = getNumInfected(r,c);
                 b = getNumSick(r,c);
 
-                if (grid[r][c] > 255)
-                {
-                    grid[r][c] = 255;
-                }
-
                 if (isCellHealthy(r,c))
                 {
-                    grid[r][c] = (int)(a/k1 + b/k2 + 1.0);
+                    grid[r][c] = (a/k1) + (b/k2) + 1;
                 }
 
                 else if (isCellSick(r,c))
@@ -170,12 +170,11 @@ public class Application extends JFrame
 
                 else if (isCellInfected(r,c))
                 {
-                    grid[r][c] = (int)(sum / (a + b) + 1) + 250;
+                    grid[r][c] = (sum / (a + b) + 1) + 15;
                 }
+                
              }
         }
-        
-
     }
 
     public void keyTyped(KeyEvent e)
@@ -193,18 +192,18 @@ public class Application extends JFrame
     }
     
     public boolean isCellSick(int r, int c) {
-        return (grid[r][c] >= 255);
+        return (grid[r][c] >= 254);
     }
 
-    public int sumNeighbors(int r, int c)
+    public double sumNeighbors(int r, int c)
     {
-        int sum = 0; 
+        double sum = 0; 
 
         for (int i = -1; i <= 1; i++)
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (isInBounds(r+i, c+j))
+                if (!isInBounds(r+i, c+j))
                 {
                     continue;
                 }
@@ -227,7 +226,7 @@ public class Application extends JFrame
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (isInBounds(r+i, c+j))
+                if (!isInBounds(r+i, c+j))
                 {
                     continue;
                 }
@@ -255,7 +254,7 @@ public class Application extends JFrame
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (isInBounds(r+i, c+j))
+                if (!isInBounds(r+i, c+j))
                 {
                     continue;
                 }
@@ -278,7 +277,10 @@ public class Application extends JFrame
 
     public boolean isInBounds(int i, int j)
     {
-        if (true)
+        if (i > 0 &&
+            i < grid.length - 1 &&
+            j > 0 &&
+            j < grid[0].length - 1)
         {
             return true;
         }
