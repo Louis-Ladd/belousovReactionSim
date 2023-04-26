@@ -39,6 +39,7 @@ K: Subtract from k2
 S: Step simulation forward (must be paused)
 R: Randomize cells
 C: Set all cells to 0
+N: Highlights all cells equal to or less than 1
 Up Arrow: Increase brush size
 Down Arrow: Decrease brush size
 Left Click: Set cells under brush to two-hundred

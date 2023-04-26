@@ -29,6 +29,7 @@ public class Application extends JFrame
     public static final int SCREENWIDTH = 1080;
     private static final double PI = 3.1415926535;
     private static final int SCALE = 4;
+    private static final int messageLimit = 10;
 
     public static Random rand;
 
@@ -39,7 +40,7 @@ public class Application extends JFrame
 
     private int frameCount, brushSize;
 
-    private boolean stopGameLoop, simulate;
+    private boolean stopGameLoop, simulate, highlightHealthy;
 
     private long frameTime;
 
@@ -109,6 +110,10 @@ public class Application extends JFrame
                 case KeyEvent.VK_SPACE:
                     simulate = !simulate;
                     newMessage(simulate ? "unpaused" : "paused", 20);
+                    break;
+                case KeyEvent.VK_N:
+                    highlightHealthy = !highlightHealthy;
+                    newMessage(highlightHealthy ? "Highlight Healthy Enabled" : "Highlight Healthy Disabled" , 20);
                     break;
 
             }
@@ -222,6 +227,10 @@ public class Application extends JFrame
                 int cn = (int)clampDouble(grid[r][c],0,255);
                 g.setColor(new Color(cn > 100 ? cn : 0, cn > 200 ? cn : 0, (int)(cn/1.5))); // Blue-Yellowish scale 
                 //g.setColor(new Color(cn, cn, cn)); // Grayscale
+                if (grid[r][c] <= 1 && highlightHealthy)
+                {
+                    g.setColor(Color.GREEN);
+                }
                 g.fillRect(r*SCALE,c*SCALE,SCALE,SCALE);
             }
         }
@@ -298,7 +307,7 @@ public class Application extends JFrame
 
                 if (isCellHealthy(r,c))
                 {
-                    grid[r][c] = (a/k1Const) + (b/k2Const);
+                    grid[r][c] = (a/k1Const) + (b/k2Const) + 1;
                 }
                 else if (isCellSick(r,c))
                 {
@@ -309,6 +318,12 @@ public class Application extends JFrame
                     grid[r][c] = (sum / (a + b) + 1) + gConst;
                 }
             }
+        }
+
+        if (messages.size() > messageLimit)
+        {
+            messages.remove(messages.size()-1);
+            messageTimeout.remove(messageTimeout.size()-1);
         }
     }
 
@@ -419,6 +434,9 @@ public class Application extends JFrame
 
     public void newMessage(String text, int timeout)
     {
+        if (messages.size() > messageLimit)
+        {return;}
+
         messages.add(0, text);
         messageTimeout.add(0, Integer.valueOf(timeout));
     }
