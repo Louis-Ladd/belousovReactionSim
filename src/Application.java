@@ -19,6 +19,10 @@ import java.awt.event.KeyEvent;
 *This cellular automata is based of this paper
 *this was used to simulate the Belousov Zhabotinsky reaction
 *A very intresting chemical reaction with oscillations.
+<<<<<<< HEAD
+=======
+*Dewdney, A. K. "COMPUTER RECREATIONS."
+>>>>>>> bc9639c (adjusted simulation calculations)
 *Scientific American 259, no. 2 (1988): 104–7. http://www.jstor.org/stable/24989205.
 */
 
@@ -27,7 +31,7 @@ public class Application extends JFrame
     public static final int SCREENHEIGHT = 1080;
     public static final int SCREENWIDTH = 1080;
     private static final double PI = 3.1415926535;
-    private static final int SCALE = 4;
+    private static final int SCALE = 3;
     private static final int messageLimit = 10;
 
     public static Random rand;
@@ -43,7 +47,7 @@ public class Application extends JFrame
 
     private long frameTime;
 
-    private double[][] grid = new double[SCREENHEIGHT/SCALE][SCREENWIDTH/SCALE];
+    private int[][] grid = new int[SCREENHEIGHT/SCALE][SCREENWIDTH/SCALE];
 
     // These array lists are presumed to always be the same size and correlate to one another
     // A full class implementation felt overkill for this feature.
@@ -313,15 +317,15 @@ public class Application extends JFrame
 
                 if (isCellHealthy(r,c))
                 {
-                    grid[r][c] = (a/k1Const) + (b/k2Const) + 1;
+                    grid[r][c] = (int)(a/k1Const) + (int)(b/k2Const);
                 }
                 else if (isCellSick(r,c))
                 {
-                    grid[r][c] = 1;
+                    grid[r][c] = 0;
                 }
                 else if (isCellInfected(r,c))
                 {
-                    grid[r][c] = (sum / (a + b) + 1) + gConst;
+                    grid[r][c] = (int)(sum / (a + b + 1)) + gConst;
                 }
             }
         }
@@ -334,10 +338,10 @@ public class Application extends JFrame
     }
 
     public boolean isCellHealthy(int r, int c) 
-    {return (grid[r][c] == 0);}
+    {return (grid[r][c] <= 0);}
     
     public boolean isCellInfected(int r, int c) 
-    {return (grid[r][c] >= 1 && grid[r][c] < 255);}
+    {return (grid[r][c] > 0 && grid[r][c] < 255);}
     
     public boolean isCellSick(int r, int c) 
     {return (grid[r][c] >= 255);}
@@ -350,8 +354,7 @@ public class Application extends JFrame
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (!inBounds(r+i, c+j) || 
-                    (i == 0 && j == 0))
+                if (!inBounds(r+i, c+j))
                 {continue;}
 
                 sum += grid[r+i][c+j];
