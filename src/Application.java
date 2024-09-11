@@ -19,7 +19,14 @@ import java.awt.event.KeyEvent;
 *This cellular automata is based of this paper
 *this was used to simulate the Belousov Zhabotinsky reaction
 *A very intresting chemical reaction with oscillations.
+<<<<<<< HEAD
 *Dewdney, A. K. "COMPUTER RECREATIONS."
+=======
+<<<<<<< HEAD
+=======
+*Dewdney, A. K. "COMPUTER RECREATIONS."
+>>>>>>> bc9639c (adjusted simulation calculations)
+>>>>>>> 4b76a3fd7cbf55a255ee0d1cfcc573007e256789
 *Scientific American 259, no. 2 (1988): 104–7. http://www.jstor.org/stable/24989205.
 */
 
@@ -225,7 +232,14 @@ public class Application extends JFrame
             for (int c = 0; c < grid[r].length; c++)
             {
                 int cn = (int)clampDouble(grid[r][c],0,255);
-                g.setColor(new Color(cn > 100 ? cn : 0, cn > 200 ? cn : 0, (int)(cn/1.5))); // Blue-Yellowish scale 
+                if (grid[r][c] == 0) 
+                {
+                  g.setColor(Color.RED);
+                }
+                else
+                {
+                  g.setColor(new Color(cn > 100 ? cn : 0, cn > 200 ? cn : 0, (int)(cn/1.5))); // Blue-Yellowish scale 
+                }
                 //g.setColor(new Color(cn, cn, cn)); // Grayscale
                 if (grid[r][c] <= 1 && highlightHealthy)
                 {
