@@ -11,6 +11,7 @@
 | 3 | 3 | 1 | Sparse belousov zhabotinsky reaction |
 | 6 | 2 | 72| TV "Static" |
 | 5 | 2 | 3 | Constellations |
+| 1 | 1 |-5 | Water "Ripples"| 
 
 
 # Control Scheme:
