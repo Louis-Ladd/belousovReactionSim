@@ -35,8 +35,9 @@ public class Application extends JFrame
     public static final int SCREENHEIGHT = 1080;
     public static final int SCREENWIDTH = 1080;
     private static final double PI = 3.1415926535;
-    private static final int SCALE = 3;
+    private static final int SCALE = 4;
     private static final int messageLimit = 10;
+    private static final int CELL_N = 255;
 
     public static Random rand;
 
@@ -59,12 +60,12 @@ public class Application extends JFrame
     private ArrayList<Integer> messageTimeout = new ArrayList<Integer>();
 
     public static boolean[] keys = {false, false, false};
-    
+
     public boolean debugMode;
 
     public int k1Const, k2Const, gConst;
-    
-    public Application(boolean dbm) 
+
+    public Application(boolean dbm)
     {
         debugMode = dbm;
 
@@ -127,7 +128,7 @@ public class Application extends JFrame
           }
         });
 
-        addMouseListener(new MouseClickHandler()); 
+        addMouseListener(new MouseClickHandler());
         setSize(SCREENWIDTH, SCREENHEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -140,14 +141,14 @@ public class Application extends JFrame
         simulate = true;
         brushSize = 2;
 
-        k1Const = 1; //Parameter k1
-        k2Const = 6; //Parameter k2
+        k1Const = 3; //Parameter k1
+        k2Const = 2; //Parameter k2
         gConst = 6; //Constant "infection rate"
 
-        gameLoop = new SwingWorker() 
+        gameLoop = new SwingWorker()
         {
             @Override
-            protected Object doInBackground() throws Exception 
+            protected Object doInBackground() throws Exception
             {
                 newMessage("Proceed with caution if you are prone to epileptic seizures.", 11);
                 newMessage("WARNING: High parameter values can cause intense flashing.", 11);
@@ -159,7 +160,7 @@ public class Application extends JFrame
 
                 genBoard();
 
-                while(!stopGameLoop) 
+                while(!stopGameLoop)
                 {
                     if (simulate)
                     {update();}
@@ -184,7 +185,7 @@ public class Application extends JFrame
             for (int siz = brushSize; siz > 0; siz = siz - 1)
             {
                 for (double i = 0; i <= 360; i += 0.5)
-                {   
+                {
                     int x1 = (int)(siz * Math.cos(i * PI / 180));
                     int y1 = (int)(siz * Math.sin(i * PI / 180));
                     try
@@ -194,7 +195,7 @@ public class Application extends JFrame
                             grid[(xPos+x1)/SCALE][(yPos+y1)/SCALE] = 200;
                         }
                         else
-                        {    
+                        {
                             grid[(xPos+x1)/SCALE][(yPos+y1)/SCALE] = 1;
                         }
                     }
@@ -209,7 +210,7 @@ public class Application extends JFrame
     }
 
     @Override
-    public void paint(Graphics g) 
+    public void paint(Graphics g)
     {
         long startFrame = System.nanoTime();
 
@@ -217,7 +218,7 @@ public class Application extends JFrame
         dbg = dbImage.getGraphics();
 
         paintComponent(dbg);
-        
+
         g.drawImage(dbImage, 0, 0, this);
 
         long endFrame = System.nanoTime();
@@ -232,13 +233,13 @@ public class Application extends JFrame
             for (int c = 0; c < grid[r].length; c++)
             {
                 int cn = (int)clampDouble(grid[r][c],0,255);
-                if (grid[r][c] == 0) 
+                if (grid[r][c] == 0)
                 {
-                  g.setColor(Color.RED);
+                  g.setColor(Color.BLACK);
                 }
                 else
                 {
-                  g.setColor(new Color(cn > 100 ? cn : 0, cn > 200 ? cn : 0, (int)(cn/1.5))); // Blue-Yellowish scale 
+                  g.setColor(new Color(cn > 100 ? cn : 0, cn > 200 ? cn : 0, (int)(cn/1.5))); // Blue-Yellowish scale
                 }
                 //g.setColor(new Color(cn, cn, cn)); // Grayscale
                 if (grid[r][c] <= 1 && highlightHealthy)
@@ -290,18 +291,18 @@ public class Application extends JFrame
             alpha = clampInt(alpha, 0,255);
 
             g.setColor(new Color(0, 0, 0, alpha));
-            g.fillRect(((SCREENWIDTH/2) - (messages.get(i).length()*10)/2)-10, 
-                        80 + (50*i), 
-                        (12*messages.get(i).length()) + 20, 
+            g.fillRect(((SCREENWIDTH/2) - (messages.get(i).length()*10)/2)-10,
+                        80 + (50*i),
+                        (12*messages.get(i).length()) + 20,
                         30);
 
             g.setColor(new Color(255, 255, 255, alpha));
-            g.drawString(messages.get(i), 
-                        (SCREENWIDTH/2) - (messages.get(i).length()*10)/2, 
+            g.drawString(messages.get(i),
+                        (SCREENWIDTH/2) - (messages.get(i).length()*10)/2,
                         100 + (50*i));
         }
     }
-    
+
     public void update()
     {
         frameCount++;
@@ -323,13 +324,24 @@ public class Application extends JFrame
                 {
                     grid[r][c] = (int)(a/k1Const) + (int)(b/k2Const);
                 }
+                else if (isCellInfected(r,c))
+                {
+                    if (a == 0)
+                    {
+                        grid[r][c] = grid[r][c] + gConst;
+                    }
+                    else
+                    {
+                        grid[r][c] = (int)(sum / a) + gConst;
+                    }
+                    if (grid[r][c] > CELL_N)
+                    {
+                        grid[r][c] = CELL_N;
+                    }
+                }
                 else if (isCellSick(r,c))
                 {
                     grid[r][c] = 0;
-                }
-                else if (isCellInfected(r,c))
-                {
-                    grid[r][c] = (int)(sum / (a + b + 1)) + gConst;
                 }
             }
         }
@@ -341,18 +353,18 @@ public class Application extends JFrame
         }
     }
 
-    public boolean isCellHealthy(int r, int c) 
+    public boolean isCellHealthy(int r, int c)
     {return (grid[r][c] <= 0);}
-    
-    public boolean isCellInfected(int r, int c) 
-    {return (grid[r][c] > 0 && grid[r][c] < 255);}
-    
-    public boolean isCellSick(int r, int c) 
-    {return (grid[r][c] >= 255);}
+
+    public boolean isCellInfected(int r, int c)
+    {return (grid[r][c] > 0 && grid[r][c] < CELL_N);}
+
+    public boolean isCellSick(int r, int c)
+    {return (grid[r][c] >= CELL_N);}
 
     public double sumNeighbors(int r, int c)
     {
-        double sum = 0; 
+        double sum = 0;
 
         for (int i = -1; i <= 1; i++)
         {
@@ -368,7 +380,7 @@ public class Application extends JFrame
         return sum;
     }
 
-    public int getNumSick(int r, int c)
+    public int getNumInfected(int r, int c)
     {
         int a = 0;
 
@@ -376,7 +388,7 @@ public class Application extends JFrame
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (!inBounds(r+i, c+j) || 
+                if (!inBounds(r+i, c+j) ||
                     (i == 0 && j == 0))
                 {continue;}
 
@@ -389,7 +401,7 @@ public class Application extends JFrame
         return a;
     }
 
-    public int getNumInfected(int r, int c)
+    public int getNumSick(int r, int c)
     {
         int b = 0;
 
@@ -397,7 +409,7 @@ public class Application extends JFrame
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (!inBounds(r+i, c+j) || 
+                if (!inBounds(r+i, c+j) ||
                     (i == 0 && j == 0))
                 {continue;}
 
@@ -412,7 +424,7 @@ public class Application extends JFrame
 
     public boolean inBounds(int i, int j)
     {
-        if (i < 0 || 
+        if (i < 0 ||
             i > grid.length-1 ||
             j < 0 ||
             j > grid[0].length-1)
@@ -429,7 +441,7 @@ public class Application extends JFrame
         {
             for (int c = 0; c < grid[r].length; c++)
             {
-                grid[r][c] = rand.nextInt(0,256);
+                grid[r][c] = rand.nextInt(0,CELL_N);
             }
         }
     }
@@ -454,11 +466,11 @@ public class Application extends JFrame
         messageTimeout.add(0, Integer.valueOf(timeout));
     }
 
-    public static double clampDouble(double val, double min, double max) 
+    public static double clampDouble(double val, double min, double max)
     {
         return Math.max(min, Math.min(max, val));
     }
-    public static int clampInt(int  val, int  min, int max) 
+    public static int clampInt(int  val, int  min, int max)
     {
         return Math.max(min, Math.min(max, val));
     }
