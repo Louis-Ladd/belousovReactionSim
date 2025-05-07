@@ -11,7 +11,7 @@
 | 3 | 3 | 1 | Sparse belousov zhabotinsky reaction |
 | 6 | 2 | 72| TV "Static" |
 | 5 | 2 | 3 | Constellations |
-| 1 | 1 |-5 | Water "Ripples"| 
+| 1 | 1 |-5 | Water "Ripples" (Do not use Highlight Healthy cells with this if you are prone to epileptic seizures)| 
 
 
 # Control Scheme:
