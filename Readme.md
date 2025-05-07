@@ -1,51 +1,32 @@
 ![image](https://github.com/user-attachments/assets/28651141-41d2-48ed-a568-0b022c13e1d8)
 
 
+
 # Cool Parameter sets
-K1: 6
-K2: 1
-G: 92
 
---
-
-K1: 1
-K2: 1
-G: 22
-
---
-
-k1: 1
-k2: 1
-G: 6
-
---
-
-k1: 1
-k2: 6
-G:3
-
---
-
-k1: 1
-k2: 6
-g: 0
+| K1 | K2 | G | Description |
+| --- | --- | --- | --- |
+| 3 | 2 | 6 | Original belousov zhabotinsky reaction |
+| 5 | 1 | 7 | "Lineless" belousov zhabotinsky reaction |
+| 3 | 3 | 1 | Sparse belousov zhabotinsky reaction |
+| 6 | 2 | 72| TV "Static" |
 
 
-Control Scheme:
+# Control Scheme:
 
-Y: Add to G
-H: Subtract from G
-U: Add to k1
-J: Subtract from k1
-I: Add to k2
-K: Subtract from k2
-S: Step simulation forward (must be paused)
-R: Randomize cells
-C: Set all cells to 0
-N: Highlights all cells equal to or less than 1
-Up Arrow: Increase brush size
-Down Arrow: Decrease brush size
-Left Click: Set cells under brush to two-hundred
-Right Click: Set cells under brush to zero
-Spacebar: Pause simulation
+| Key | Action |
+| Y | Increment G Constant|
+| H | Decrement G Constant |
+| U | Increment k1 |
+| J | Decrement k1|
+| I | Increment k2|
+| K | Decrement k2 |
+| Spacebar | Pause simulation |
+| S | Step forward (Must be paused) |
+| R | Randomize Cells |
+| N | Highlights Healthy Cells |
+| Left Click | Sets a radius of pixels to `200` |
+| Right Click | Sets a radius of pixels to `0` |
+| Up/Down Arrow | Increase/Decrease Brush size |
+
 
