@@ -10,6 +10,7 @@
 | 5 | 1 | 7 | "Lineless" belousov zhabotinsky reaction |
 | 3 | 3 | 1 | Sparse belousov zhabotinsky reaction |
 | 6 | 2 | 72| TV "Static" |
+| 5 | 2 | 3 | Constellations |
 
 
 # Control Scheme:
