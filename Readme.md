@@ -5,7 +5,7 @@
 # Cool Parameter sets
 
 | K1 | K2 | G | Description |
-| --- | --- | --- | --- |
+|--- | ---|---|     ---     |
 | 3 | 2 | 6 | Original belousov zhabotinsky reaction |
 | 5 | 1 | 7 | "Lineless" belousov zhabotinsky reaction |
 | 3 | 3 | 1 | Sparse belousov zhabotinsky reaction |
@@ -15,6 +15,7 @@
 # Control Scheme:
 
 | Key | Action |
+| --- |  ---   |
 | Y | Increment G Constant|
 | H | Decrement G Constant |
 | U | Increment k1 |
