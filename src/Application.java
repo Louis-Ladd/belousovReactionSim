@@ -53,6 +53,7 @@ public class Application extends JFrame
     private long frameTime;
 
     private int[][] grid = new int[SCREENHEIGHT/SCALE][SCREENWIDTH/SCALE];
+    private int[][] new_grid = new int[SCREENHEIGHT/SCALE][SCREENWIDTH/SCALE];
 
     // These array lists are presumed to always be the same size and correlate to one another
     // A full class implementation felt overkill for this feature.
@@ -162,6 +163,7 @@ public class Application extends JFrame
 
                 while(!stopGameLoop)
                 {
+                    grid = new_grid;
                     if (simulate)
                     {update();}
                     repaint();
@@ -181,7 +183,6 @@ public class Application extends JFrame
             int xPos = event.getX();
             int yPos = event.getY();
 
-            //Possibly the second most inefficent way of drawing a circle. TODO: Fix this
             for (int siz = brushSize; siz > 0; siz = siz - 1)
             {
                 for (double i = 0; i <= 360; i += 0.5)
@@ -192,11 +193,11 @@ public class Application extends JFrame
                     {
                         if (event.getButton() == 1)
                         {
-                            grid[(xPos+x1)/SCALE][(yPos+y1)/SCALE] = 200;
+                            new_grid[(xPos+x1)/SCALE][(yPos+y1)/SCALE] = CELL_N-1;
                         }
                         else
                         {
-                            grid[(xPos+x1)/SCALE][(yPos+y1)/SCALE] = 1;
+                            new_grid[(xPos+x1)/SCALE][(yPos+y1)/SCALE] = 0;
                         }
                     }
 
@@ -232,14 +233,16 @@ public class Application extends JFrame
         {
             for (int c = 0; c < grid[r].length; c++)
             {
-                int cn = (int)clampDouble(grid[r][c],0,255);
+                int cell_value = (int)clampDouble(grid[r][c],0,CELL_N);
+                int scaled_cell_value = (int)(((double)cell_value/CELL_N)*255);
                 if (grid[r][c] == 0)
                 {
                   g.setColor(Color.BLACK);
                 }
                 else
                 {
-                  g.setColor(new Color(cn > 100 ? cn : 0, cn > 200 ? cn : 0, (int)(cn/1.5))); // Blue-Yellowish scale
+ g.setColor(new Color(scaled_cell_value > 100 ? scaled_cell_value : 0, scaled_cell_value > 200 ? scaled_cell_value : 0, (int)(scaled_cell_value/1.5)));
+                  // g.setColor(new Color(cn > 100 ? cn : 0, cn > 200 ? cn : 0, (int)(cn/1.5))); // Blue-Yellowish scale
                 }
                 //g.setColor(new Color(cn, cn, cn)); // Grayscale
                 if (grid[r][c] <= 1 && highlightHealthy)
@@ -311,9 +314,9 @@ public class Application extends JFrame
         int a = 0;
         int b = 0;
 
-        for (int r = 0; r < grid.length; r++)
+        for (int r = 0; r < new_grid.length; r++)
         {
-            for (int c = 0; c < grid[r].length; c++)
+            for (int c = 0; c < new_grid[r].length; c++)
             {
                 sum = sumNeighbors(r,c);
                 a = getNumInfected(r,c);
@@ -322,26 +325,26 @@ public class Application extends JFrame
 
                 if (isCellHealthy(r,c))
                 {
-                    grid[r][c] = (int)(a/k1Const) + (int)(b/k2Const);
+                    new_grid[r][c] = (int)(a/k1Const) + (int)(b/k2Const);
                 }
                 else if (isCellInfected(r,c))
                 {
                     if (a == 0)
                     {
-                        grid[r][c] = grid[r][c] + gConst;
+                        new_grid[r][c] = grid[r][c] + gConst;
                     }
                     else
                     {
-                        grid[r][c] = (int)(sum / a) + gConst;
+                        new_grid[r][c] = (int)(sum / a) + gConst;
                     }
-                    if (grid[r][c] > CELL_N)
+                    if (new_grid[r][c] > CELL_N)
                     {
-                        grid[r][c] = CELL_N;
+                        new_grid[r][c] = CELL_N;
                     }
                 }
                 else if (isCellSick(r,c))
                 {
-                    grid[r][c] = 0;
+                    new_grid[r][c] = 0;
                 }
             }
         }
@@ -437,11 +440,11 @@ public class Application extends JFrame
 
     public void genBoard()
     {
-        for (int r = 0; r < grid.length; r++)
+        for (int r = 0; r < new_grid.length; r++)
         {
-            for (int c = 0; c < grid[r].length; c++)
+            for (int c = 0; c < new_grid[r].length; c++)
             {
-                grid[r][c] = rand.nextInt(0,CELL_N);
+                new_grid[r][c] = rand.nextInt(0,CELL_N);
             }
         }
     }
