@@ -19,8 +19,15 @@ import java.awt.event.KeyEvent;
 *This cellular automata is based of this paper
 *this was used to simulate the Belousov Zhabotinsky reaction
 *A very intresting chemical reaction with oscillations.
+<<<<<<< HEAD
 *Dewdney, A. K. "COMPUTER RECREATIONS."
-*Scientific American 259, no. 2 (1988): 104–7. http://www.jstor.org/stable/24989205
+=======
+<<<<<<< HEAD
+=======
+*Dewdney, A. K. "COMPUTER RECREATIONS."
+>>>>>>> bc9639c (adjusted simulation calculations)
+>>>>>>> 4b76a3fd7cbf55a255ee0d1cfcc573007e256789
+*Scientific American 259, no. 2 (1988): 104–7. http://www.jstor.org/stable/24989205.
 */
 
 public class Application extends JFrame
@@ -225,19 +232,17 @@ public class Application extends JFrame
         {
             for (int c = 0; c < grid[r].length; c++)
             {
-                int cell_value = (int)clampDouble(grid[r][c],0,CELL_N);
-                int scaled_cell_value = (int)(((double)cell_value/CELL_N)*255);
+                int cn = (int)clampDouble(grid[r][c],0,255);
                 if (grid[r][c] == 0)
                 {
                   g.setColor(Color.BLACK);
                 }
                 else
                 {
-                    g.setColor(new Color(scaled_cell_value > 100 ? scaled_cell_value : 0, scaled_cell_value > 200 ? scaled_cell_value : 0, (int)(scaled_cell_value/1.5))); // Purple-Yellowish scale
-                    //g.setColor(new Color(0, scaled_cell_value, (int)(scaled_cell_value)));
+                  g.setColor(new Color(cn > 100 ? cn : 0, cn > 200 ? cn : 0, (int)(cn/1.5))); // Blue-Yellowish scale
                 }
                 //g.setColor(new Color(cn, cn, cn)); // Grayscale
-                if (grid[r][c] == 0 && highlightHealthy)
+                if (grid[r][c] <= 1 && highlightHealthy)
                 {
                     g.setColor(Color.GREEN);
                 }
@@ -365,8 +370,7 @@ public class Application extends JFrame
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (!inBounds(r+i, c+j) ||
-                    (i == 0 && j == 0))
+                if (!inBounds(r+i, c+j))
                 {continue;}
 
                 sum += grid[r+i][c+j];
@@ -384,7 +388,8 @@ public class Application extends JFrame
         {
             for (int j = -1; j <= 1; j++)
             {
-                if (!inBounds(r+i, c+j))
+                if (!inBounds(r+i, c+j) ||
+                    (i == 0 && j == 0))
                 {continue;}
 
                 if (isCellInfected(r+i, c+j))
